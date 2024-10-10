@@ -30,7 +30,7 @@ func Connect() {
 	}
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=disable TimeZone=Asia/Shanghai",
-	 config.Config("DB_HOST"), config.Config("DB_USER"), config.Config("DB_PASSWORD"), config.Config("DB_NAME"), port)
+		config.Config("DB_HOST"), config.Config("DB_USER"), config.Config("DB_PASSWORD"), config.Config("DB_NAME"), port)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
@@ -46,6 +46,6 @@ func Connect() {
 	db.Logger = logger.Default.LogMode(logger.Warn)
 
 	db.AutoMigrate(&models.Url{})
-	
+
 	DB = DbInstance{Db: db}
 }
