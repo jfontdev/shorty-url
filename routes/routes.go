@@ -8,6 +8,7 @@ import (
 	"shorty-url/models"
 
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
 type shortenBody struct {
@@ -15,7 +16,7 @@ type shortenBody struct {
 }
 
 type shortenResponse struct {
-	OriginalURL string `json:"original_url"`
+	OriginalURL  string `json:"original_url"`
 	ShortenedURL string `json:"shortened_url"`
 }
 
@@ -51,12 +52,32 @@ func RegisterRoutes(app *fiber.App) {
 		db := database.DB.Db
 
 		if err := db.Create(&url).Error; err != nil {
-   			return c.Status(500).JSON(fiber.Map{"status": "error", "message":  "Could not create url", "data": err})
-  		}
+			return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not create url", "data": err})
+		}
 
 		return c.JSON(shortenResponse{
 			OriginalURL:  originalUrl,
 			ShortenedURL: shortenedUrl,
 		})
+	})
+
+	app.Get("/shorten/:hash", func(c *fiber.Ctx) error {
+		hash := c.Params("hash")
+		url := new(models.Url)
+
+		println(hash)
+
+		db := database.DB.Db
+
+		result := db.Where("shortened_url = ?", hash).First(&url).Error
+
+		if result != nil {
+			if result == gorm.ErrRecordNotFound {
+				return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "URL not found"})
+			}
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Something went wrong"})
+		}
+
+		return c.JSON(fiber.Map{"originalUrl": url.OriginalURL})
 	})
 }
