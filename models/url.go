@@ -6,9 +6,9 @@ import (
 )
 
 type Url struct {
-	ID            uuid.UUID `gorm:"type:uuid;primaryKey"`
-	OriginalURL  string    	`gorm:"not null"`
-	ShortenedURL string    	`gorm:"not null"`
+	ID           uuid.UUID `gorm:"type:uuid;primaryKey"`
+	OriginalURL  string    `gorm:"not null"`
+	ShortenedURL string    `gorm:"not null"`
 	gorm.Model
 }
 
